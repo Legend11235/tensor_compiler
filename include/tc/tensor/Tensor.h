@@ -7,8 +7,8 @@ namespace tc {
 class Tensor {
 
     public:
-    Tensor(std::vector<size_t> shape);
-    Tensor(std::vector<size_t> shape, const float *data);
+    Tensor(const std::vector<size_t> &shape);
+    Tensor(const std::vector<size_t> &shape, const float *data);
 
     // rule of 5 for move semantics
     ~Tensor(); // destructor
@@ -18,6 +18,19 @@ class Tensor {
     Tensor& operator=(Tensor&& rhs) noexcept; // move assignment
 
     // other methods
+    
+    // read and write individual elements of a tensor
+    float& at(const std::vector<size_t>& indices);
+    const float& at(const std::vector <size_t>& indices) const;
+    // read and write pointer of tensor
+    float* data();
+    const float* data() const;
+    // shape queries
+    const std::vector<size_t>& shape() const;
+    size_t rank() const;
+    size_t size() const;
+    const std::vector<size_t>& strides() const;
+    // 
 
 
 
