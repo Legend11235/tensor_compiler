@@ -1,4 +1,5 @@
 #include "tc/tensor/Tensor.h"
+#include <algorithm>
 
 namespace tc {
 
@@ -23,7 +24,20 @@ namespace tc {
     }
 
     // constructor
-    
+    Tensor::Tensor(const std::vector<size_t> &shape){
+        shape_ = shape;
+        compute_strides();          
+        data_ = new float[size_](); // heap allocation; () zeroes it
+    }
+
+    //overloading constructor - wraps float array into Tensor
+    Tensor::Tensor(const std::vector<size_t> &shape, const float* data){
+        shape_ = shape;
+        compute_strides();  
+        data_ = new float[size_]; // allocate first        
+        std::copy(data, data + size_, data_); // now we can copy into it
+    }
+        
 
 
 
