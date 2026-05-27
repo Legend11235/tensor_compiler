@@ -38,12 +38,19 @@ namespace tc {
         std::copy(data, data + size_, data_); // now we can copy into it
     }
 
+    // Rule of 5
     // destructor
     Tensor::~Tensor(){
         delete[] data_;
     }
-        
 
+    // copy constructor
+    Tensor::Tensor(const Tensor &other){
+        shape_ = other.shape_;
+        compute_strides();
+        data_ = new float[other.size_];
+        std::copy(other.data_, other.data_ + size_, data_);
+    }
 
 
 } 
