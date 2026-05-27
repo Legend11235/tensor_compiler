@@ -37,6 +37,11 @@ namespace tc {
         data_ = new float[size_]; // allocate first        
         std::copy(data, data + size_, data_); // now we can copy into it
     }
+
+    // destructor
+    Tensor::~Tensor(){
+        delete[] data_;
+    }
         
 
 
