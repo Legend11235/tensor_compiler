@@ -170,6 +170,22 @@ namespace tc {
         return res;
     }
 
+    // reshape: change dimensions of tensor and return
+    Tensor reshape(const Tensor& tensor, const std::vector<size_t>& new_shape){
+        size_t new_shape_size = 1;
+        // new_shape but have the same amount of elements as tesnor
+        for(size_t i = 0; i < new_shape.size(); i++){
+            new_shape_size *= new_shape[i];          
+        }
+
+        if(new_shape_size != tensor.size()){
+            throw std::invalid_argument("new shape must hold same number of elements as original tensor");
+        }    
+        Tensor res(new_shape, tensor.data());
+        return res;
+    }
+
+
 
 
 } 
