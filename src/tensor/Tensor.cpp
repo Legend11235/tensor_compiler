@@ -142,4 +142,19 @@ namespace tc {
         return data_;
     }
 
+    // operations on Tensors
+    // my compiler will opitmize these
+    Tensor add(const Tensor& a, const Tensor& b){
+        // a and b need to have same dimension
+        if(a.shape() != b.shape()){
+            throw std::invalid_argument("tensors must have same dimenstions for addition");
+        }
+        Tensor res(a.shape());
+        for(size_t i = 0; i < a.size(); i ++){
+            res.data()[i] = a.data()[i] + b.data()[i];
+        }
+        return res;
+    }
+
+
 } 
