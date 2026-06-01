@@ -65,5 +65,26 @@ namespace tc {
         return *this;
     }
 
+    // move constructor
+    Tensor::Tensor(Tensor&& other) noexcept{
+        data_ = other.data_;
+        shape_ = other.shape_;
+        strides_ = other.strides_;
+        size_ = other.size_;
+        other.data_ = nullptr;
+    }
+
+    // move assignment
+    Tensor& Tensor::operator=(Tensor&& rhs) noexcept{
+        if(this == &rhs)
+            return *this;
+        delete[] data_;
+        data_ = rhs.data_;
+        shape_ = rhs.shape_;
+        strides_ = rhs.strides_;
+        size_ = rhs.size_;
+        rhs.data_ = nullptr;
+        return *this;
+    }
 
 } 
