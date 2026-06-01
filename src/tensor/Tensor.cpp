@@ -156,5 +156,20 @@ namespace tc {
         return res;
     }
 
+    // relu : negatives turn into 0's
+    Tensor relu(const Tensor& tensor){
+        Tensor res(tensor.shape());
+        for(size_t i = 0; i < tensor.size(); i++){
+            if (tensor.data()[i] < 0){
+                res.data()[i] = 0;
+            }
+            else{
+                res.data()[i] = tensor.data()[i];
+            }
+        }
+        return res;
+    }
+
+
 
 } 
