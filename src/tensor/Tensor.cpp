@@ -52,5 +52,18 @@ namespace tc {
         std::copy(other.data_, other.data_ + size_, data_);
     }
 
+    // assignment constructor
+    Tensor& Tensor::operator=(const Tensor& rhs){
+        // self assignment check
+        if (this == &rhs) 
+            return *this; 
+        delete[] data_;    
+        shape_ = rhs.shape_;
+        compute_strides();
+        data_ = new float[rhs.size_];
+        std::copy(rhs.data_, rhs.data_ + size_, data_);
+        return *this;
+    }
+
 
 } 
