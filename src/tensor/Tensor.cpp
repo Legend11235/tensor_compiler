@@ -1,5 +1,6 @@
 #include "tc/tensor/Tensor.h"
 #include <algorithm>
+#include <stdexcept>
 
 namespace tc {
 
@@ -85,6 +86,35 @@ namespace tc {
         size_ = rhs.size_;
         rhs.data_ = nullptr;
         return *this;
+    }
+
+    // at() - index of element in flat array
+
+    // for writing
+    float& Tensor::at(const std::vector<size_t>& indices){
+        // check bounds
+        if (indices.size() != shape_.size()) {
+            throw std::out_of_range("wrong number of indices");
+        }
+        // compute offset
+        size_t offset = 0;
+        for(size_t i = 0; i < indices.size(); i ++){
+            offset += indices[i] * strides_[i];
+        }
+        return data_[offset];
+    }
+    // for reading on const Tensors
+    const float& Tensor::at(const std::vector<size_t>& indices) const{
+        // check bounds
+        if (indices.size() != shape_.size()) {
+            throw std::out_of_range("wrong number of indices");
+        }
+        // compute offset
+        size_t offset = 0;
+        for(size_t i = 0; i < indices.size(); i ++){
+            offset += indices[i] * strides_[i];
+        }
+        return data_[offset];
     }
 
 } 
