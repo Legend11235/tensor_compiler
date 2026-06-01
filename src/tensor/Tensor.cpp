@@ -117,4 +117,29 @@ namespace tc {
         return data_[offset];
     }
 
+    // shape queries
+    const std::vector<size_t>& Tensor::shape() const{
+        return shape_;
+    }
+
+    size_t Tensor::rank() const{
+        return shape_.size();
+    }
+
+    size_t Tensor::size() const{
+        return size_;
+    }
+
+    const std::vector<size_t>& Tensor::strides() const{
+        return strides_;
+    }
+
+    float* Tensor::data(){
+        return data_;
+    }
+
+    const float* Tensor::data() const{
+        return data_;
+    }
+
 } 
