@@ -185,7 +185,35 @@ namespace tc {
         return res;
     }
 
+    // 2d mul
+    // {M, K} * {K, N} = {M, N}
+    Tensor matmul(const Tensor& a, const Tensor& b){
+        // check tensor rank 2
+        if(a.rank() != 2 || b.rank() != 2){
+            throw std::invalid_argument("both tensors must be rank 2");
+        }
+        // {M, K} * {K, N} -> inner dimensions must match
+        if(a.shape()[1] != b.shape()[0]){
+            throw std::invalid_argument("inner dimensions must match for matmul -> {M, K} * {K, N}");
+        }
 
+        size_t M = a.shape()[0];
+        size_t K = a.shape()[1];
+        size_t N = b.shape()[1];
+
+        Tensor res({M,N});
+
+        for(size_t i = 0; i < M; i++){
+            for(size_t j = 0; j< N; j++){
+                for(size_t k = 0; k < K; k++){
+                    // result[i][j] += a[i][k] * b[k][j]
+                    res.data()[i*N + j] += a.data()[i*K + k] * b.data()[k*N +j];
+                }
+            }
+        }
+
+        return res;
+    }
 
 
 } 
