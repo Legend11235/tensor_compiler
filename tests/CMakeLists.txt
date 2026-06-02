@@ -1,2 +1,5 @@
 enable_testing()
-# Add test executables here as you create them
+
+add_executable(test_tensor test_tensor.cpp)
+target_link_libraries(test_tensor PRIVATE tc_core)
+add_test(NAME TensorTests COMMAND test_tensor)

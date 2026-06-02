@@ -41,11 +41,6 @@ class Tensor {
     float* data_; // pointer to the flat array storing the tensor
 
     void compute_strides();
-    
-
-    
-
-
 
 };
 
