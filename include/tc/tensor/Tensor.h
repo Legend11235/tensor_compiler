@@ -35,10 +35,10 @@ class Tensor {
 
     // private fields & helpers
     private:
-    size_t size_; // size_t is a type used for non-negative counts and sizes
+    size_t size_ = 0; // size_t is a type used for non-negative counts and sizes
     std::vector<size_t> shape_; //dimension
     std::vector<size_t> strides_; // how many elemnts are skipped to move through 1 dimension. ex for 3D tensor: {x,y,1}
-    float* data_; // pointer to the flat array storing the tensor
+    float* data_ = nullptr; // pointer to the flat array storing the tensor
 
     void compute_strides();
 

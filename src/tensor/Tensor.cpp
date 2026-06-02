@@ -69,10 +69,11 @@ namespace tc {
     // move constructor
     Tensor::Tensor(Tensor&& other) noexcept{
         data_ = other.data_;
-        shape_ = other.shape_;
-        strides_ = other.strides_;
+        shape_ = std::move(other.shape_);
+        strides_ = std::move(other.strides_);
         size_ = other.size_;
         other.data_ = nullptr;
+        other.size_ = 0;
     }
 
     // move assignment
@@ -81,10 +82,11 @@ namespace tc {
             return *this;
         delete[] data_;
         data_ = rhs.data_;
-        shape_ = rhs.shape_;
-        strides_ = rhs.strides_;
+        shape_ = std::move(rhs.shape_);
+        strides_ = std::move(rhs.strides_);
         size_ = rhs.size_;
         rhs.data_ = nullptr;
+        rhs.size_ = 0;
         return *this;
     }
 
