@@ -13,8 +13,8 @@ make -j$(nproc)
 ## Phases
 | Phase | Description | Status |
 |-------|-------------|--------|
-| 1 | Tensor engine | 🔧 In progress |
-| 2 | Parser + AST | ⏳ Planned |
+| 1 | Tensor engine | ✅ Implemented |
+| 2 | Parser + AST | 🔧 In progress |
 | 3 | IR + passes | ⏳ Planned |
 | 4 | LLVM backend | ⏳ Planned |
 | 5 | Runtime | ⏳ Planned |
