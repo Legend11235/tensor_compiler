@@ -23,6 +23,12 @@ namespace tc {
         std::string source_;
         int pos_;
         int line_;
+        char peek() const;
+        char advance();
+        bool isAtEnd() const;
+        void skipWhiteSpace();
+        Token scanIdentifier();
+        Token makeToken(TokenKind kind, const std::string& lexeme, int line);
     };
 
 }
