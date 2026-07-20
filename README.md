@@ -5,10 +5,6 @@ A C++ compiler for a small tensor expression language, targeting a custom MLIR d
 Pipeline: lexer → recursive descent parser → AST → MLIRGen → custom MLIR dialect →
 optimization passes → lowering to LLVM → native code.
 
-Originally planned around a hand-rolled IR and a manual LLVM `IRBuilder` backend;
-switched to MLIR partway through to build on existing dialect/lowering
-infrastructure instead of writing that infrastructure from scratch.
-
 ## Status
 
 | Phase | Description                        | Status      |
