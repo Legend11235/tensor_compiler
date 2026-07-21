@@ -6,3 +6,6 @@ add_test(NAME TensorTests COMMAND test_tensor)
 
 add_executable(scratch_lexer scratch_lexer.cpp)
 target_link_libraries(scratch_lexer PRIVATE tc_core)
+
+add_executable(scratch_parser scratch_parser.cpp)
+target_link_libraries(scratch_parser PRIVATE tc_core)
