@@ -25,7 +25,14 @@ struct TransposeNode {
     std::unique_ptr<Expr> tensor;
 };
 
+struct Location {
+    std::string file;
+    int line;
+    int col;
+};
+
 struct Expr {
+    Location loc;
     std::variant<VarNode, MatmulNode, ReluNode, AddNode, TransposeNode> node;
 };
 

@@ -8,11 +8,12 @@ namespace tc {
 
 class Parser {
     public:
-    Parser(std::vector<Token> tokens);
+    Parser(std::vector<Token> tokens, std::string filename = "<input>");
     std::unique_ptr<Expr> parse();
 
     private:
     std::vector<Token> tokens_;
+    std::string filename_;
     int pos_;
 
     const Token& peek() const;

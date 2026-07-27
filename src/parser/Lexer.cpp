@@ -3,11 +3,8 @@
 
 namespace tc{
     
-Lexer::Lexer(const std::string& source){
-    source_ = source;
-    pos_ = 0;
-    line_ = 1;
-}
+Lexer::Lexer(const std::string& source, std::string filename)
+    : source_(source), filename_(std::move(filename)), pos_(0), line_(1), col_(1) {}
 
 bool Lexer::isAtEnd() const {
     return pos_ >= static_cast<int>(source_.size()); // static cast converts value into into
@@ -23,6 +20,12 @@ char Lexer::peek() const {
 char Lexer::advance() {
     char c = source_[static_cast<size_t>(pos_)];
     pos_++;
+    if (c == '\n') {
+        line_++;
+        col_ = 1;
+    } else {
+        col_++;
+    }
     return c;
 }
 
@@ -30,12 +33,9 @@ char Lexer::advance() {
 void Lexer::skipWhiteSpace() {
     while(!isAtEnd()) {
         char c = peek();
-        if(c == '\n'){
-            line_++;
+        if (std::isspace(static_cast<unsigned char>(c))) {
             advance();
-        } else if (std::isspace(static_cast<unsigned char>(c))) {
-            advance();
-        } else{
+        } else {
             break;
         }
     }
@@ -44,16 +44,17 @@ void Lexer::skipWhiteSpace() {
 // consumes a string and returns it as an IDENT token
 Token Lexer::scanIdentifier() {
     int startLine = line_;
+    int startCol = col_;
     std::string lexeme;
     while(!isAtEnd() && (std::isalnum(static_cast<unsigned char>(peek())) || peek() == '_')){
         lexeme += advance();
     }
-    return Token{IDENT, lexeme, startLine};
+    return Token{IDENT, lexeme, startLine, startCol};
 }
 
 // Small convenience wrapper for building a Token so tokenize() doesn't
-Token Lexer::makeToken(TokenKind kind, const std::string& lexeme, int line){
-    return Token{kind, lexeme, line};
+Token Lexer::makeToken(TokenKind kind, const std::string& lexeme, int line, int col){
+    return Token{kind, lexeme, line, col};
 }
 
 // main scanning loop
@@ -65,17 +66,18 @@ std::vector<Token> Lexer::tokenize() {
         if (isAtEnd()) break;
 
         int startLine = line_;
+        int startCol = col_;
         char c = peek();
 
         if (c == '(') {
             advance();
-            tokens.push_back(makeToken(LPAREN, "(", startLine));
+            tokens.push_back(makeToken(LPAREN, "(", startLine, startCol));
         } else if (c == ')') {
             advance();
-            tokens.push_back(makeToken(RPAREN, ")", startLine));
+            tokens.push_back(makeToken(RPAREN, ")", startLine, startCol));
         } else if (c == ',') {
             advance();
-            tokens.push_back(makeToken(COMMA, ",", startLine));
+            tokens.push_back(makeToken(COMMA, ",", startLine, startCol));
         } else if (std::isalpha(static_cast<unsigned char>(c)) || c == '_') {
             tokens.push_back(scanIdentifier());
         } else {
@@ -84,7 +86,7 @@ std::vector<Token> Lexer::tokenize() {
         }
     }
 
-    tokens.push_back(makeToken(TOK_EOF, "", line_));
+    tokens.push_back(makeToken(TOK_EOF, "", line_, col_));
     return tokens;
 }
 

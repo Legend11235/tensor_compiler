@@ -3,7 +3,8 @@
 
 namespace tc {
 
-Parser::Parser(std::vector<Token> tokens) : tokens_(std::move(tokens)), pos_(0) {}
+Parser::Parser(std::vector<Token> tokens, std::string filename)
+    : tokens_(std::move(tokens)), filename_(std::move(filename)), pos_(0) {}
 
 bool Parser::isAtEnd() const {
     return tokens_[static_cast<size_t>(pos_)].kind == TOK_EOF;
@@ -34,14 +35,13 @@ const Token& Parser::expect(TokenKind kind, const std::string& errorMsg) {
 
 std::unique_ptr<Expr> Parser::parseExpr() {
     Token nameTok = expect(IDENT, "Expected identifier");
+    Location loc{filename_, nameTok.line, nameTok.col};
     std::string name = nameTok.lexeme;
 
-    // Bare variable: identifier not followed by '('
     if (!check(LPAREN)) {
-        return std::make_unique<Expr>(Expr{VarNode{name}});
+        return std::make_unique<Expr>(Expr{loc, VarNode{name}});
     }
 
-    // Function-call form: IDENT '(' ... ')'
     expect(LPAREN, "Expected '(' after '" + name + "'");
 
     if (name == "matmul" || name == "add") {
@@ -51,9 +51,9 @@ std::unique_ptr<Expr> Parser::parseExpr() {
         expect(RPAREN, "Expected ')' to close '" + name + "'");
 
         if (name == "matmul") {
-            return std::make_unique<Expr>(Expr{MatmulNode{std::move(left), std::move(right)}});
+            return std::make_unique<Expr>(Expr{loc, MatmulNode{std::move(left), std::move(right)}});
         } else {
-            return std::make_unique<Expr>(Expr{AddNode{std::move(left), std::move(right)}});
+            return std::make_unique<Expr>(Expr{loc, AddNode{std::move(left), std::move(right)}});
         }
 
     } else if (name == "relu" || name == "transpose") {
@@ -61,9 +61,9 @@ std::unique_ptr<Expr> Parser::parseExpr() {
         expect(RPAREN, "Expected ')' to close '" + name + "'");
 
         if (name == "relu") {
-            return std::make_unique<Expr>(Expr{ReluNode{std::move(arg)}});
+            return std::make_unique<Expr>(Expr{loc, ReluNode{std::move(arg)}});
         } else {
-            return std::make_unique<Expr>(Expr{TransposeNode{std::move(arg)}});
+            return std::make_unique<Expr>(Expr{loc, TransposeNode{std::move(arg)}});
         }
 
     } else {
