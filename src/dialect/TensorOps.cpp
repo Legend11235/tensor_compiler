@@ -1,4 +1,4 @@
-#include "tc/dialect/TensorDialect.h"
+#include "tc/dialect/TensorOps.h"
 
 #define GET_OP_CLASSES
 #include "TensorOps.cpp.inc"

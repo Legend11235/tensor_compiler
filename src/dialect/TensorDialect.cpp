@@ -1,7 +1,11 @@
 #include "tc/dialect/TensorDialect.h"
+#include "tc/dialect/TensorOps.h"
 
 #include "TensorDialect.cpp.inc"
 
 void mlir::tc::TensorDialect::initialize() {
-  // Op registration will go here once ops exist.
+    addOperations <
+        #define GET_OP_LIST
+        #include "TensorOps.cpp.inc"
+    >();
 }
