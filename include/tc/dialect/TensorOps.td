@@ -17,6 +17,7 @@ class TC_Op<string mnemonic, list<Trait> traits = []> :
         let results = (outs 2DTensorOf<[F32]>:$result);
 
         let hasVerifier = 1;
+        let assemblyFormat = "$lhs `,` $rhs attr-dict `:` type($lhs) `,` type($rhs) `->` type($result)";
 }
 
 #endif // TC_OPS
