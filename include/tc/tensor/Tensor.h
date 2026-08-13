@@ -50,4 +50,5 @@ Tensor matmul(const Tensor& a, const Tensor& b);
 Tensor add(const Tensor& a, const Tensor& b);
 Tensor relu(const Tensor& tensor);
 Tensor reshape(const Tensor& tensor, const std::vector<size_t>& new_shape);
+Tensor transpose(const Tensor& tensor, const std::vector<size_t>& perm);
 }

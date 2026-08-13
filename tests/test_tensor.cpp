@@ -90,6 +90,16 @@ int main() {
     assert(t18.at({1, 0}) == 139.0f);
     assert(t18.at({1, 1}) == 154.0f);
 
+    //transpose
+    float data5[] = {1.0f, 2.0f, 3.0f, 4.0f};
+    Tensor t19({2,2}, data5);
+    Tensor t20 = transpose(t19, {1, 0});
+    assert(t20.shape() == std::vector<size_t>({2, 2}));
+    assert(t20.at({0, 0}) == 1.0f);
+    assert(t20.at({0, 1}) == 3.0f);
+    assert(t20.at({1, 0}) == 2.0f);
+    assert(t20.at({1, 1}) == 4.0f);
+
 
     std::cout << "All tests passed!\n";
     return 0;

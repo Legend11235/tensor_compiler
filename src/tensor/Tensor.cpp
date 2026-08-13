@@ -217,5 +217,63 @@ namespace tc {
         return res;
     }
 
+    // transpose
+    // 
+    Tensor transpose(const Tensor& tensor, const std::vector<size_t>& perm){
+
+        if (perm.size() != tensor.rank()) {
+            throw std::invalid_argument("perm size must match tensor rank");
+        }
+
+        // make sure every axis number is <= rank and only shows up once
+
+        // boolean checklist
+        std::vector<bool> seen(tensor.rank(), false);
+
+        for(size_t p : perm) {
+            if (p >= tensor.rank()) {
+                throw std::invalid_argument("perm contains out of range axis");
+            }
+
+            if (seen[p]) {
+                throw std::invalid_argument("perm contains duplicate axis");
+            }
+
+            seen[p] = true;
+        }
+
+        // now will compute new shape
+        std::vector<size_t> new_shape(tensor.rank());
+        for (size_t i = 0; i < perm.size(); i++) {
+            new_shape[i] = tensor.shape()[perm[i]];
+        }
+
+
+        // build result and remap data
+        Tensor res(new_shape);
+        std::vector<size_t> output_indices(tensor.rank(), 0);
+
+        for (size_t count = 0; count < res.size(); count++) {
+            std::vector<size_t> input_indices(tensor.rank());
+            for (size_t k = 0; k < perm.size(); k++) {
+                input_indices[perm[k]] = output_indices[k];
+            }
+
+            res.at(output_indices) = tensor.at(input_indices);
+
+            // increment output_indices
+            for (size_t axis = tensor.rank(); axis-- > 0; ) {
+                output_indices[axis]++;
+                if (output_indices[axis] < new_shape[axis]) {
+                    break;
+                }
+                output_indices[axis] = 0;
+            }
+        }
+
+        return res;
+
+
+    }
 
 } 
