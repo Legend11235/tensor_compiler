@@ -26,7 +26,7 @@ class TC_Op<string mnemonic, list<Trait> traits = []> :
         let assemblyFormat = "$lhs `,` $rhs attr-dict `:` type($lhs) `,` type($rhs) `->` type($result)";
     }
 
-    // addition dialect
+    // matrix addition dialect
     // Commutative is a trait, because matrix addition is cummutative
     // SameOperandsAndResultType because the two tensors being added (operands) and the resulting tensor(result) will have the same dimension and type 
     def AddOp : TC_Op<"add", [Pure, Commutative, SameOperandsAndResultType]> {
@@ -41,8 +41,19 @@ class TC_Op<string mnemonic, list<Trait> traits = []> :
         // here we dont set hasVerifier = 1 because of elementwise addition the trait "SameOperandsAndResultType" already takes care of it
         
         let assemblyFormat = "$lhs `,` $rhs attr-dict `:` type($result)";
-
     }
 
+    // Relu operation
+    def ReluOp : TC_Op<"relu", [Pure, SameOperandsAndResultType]> {
+        let summary = "element wise relu operation";
+        let description = [{ 
+            Performs element wise relu operation
+        }];
+
+        let arguments = (ins TensorOf<[F32]>:$input);
+        let results = (outs TensorOf<[F32]>:$result);
+
+        let assemblyFormat = "$input attr-dict `:` type($result)";
+    }
 
 #endif // TC_OPS
