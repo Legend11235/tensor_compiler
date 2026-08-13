@@ -3,5 +3,5 @@
 #include <string>
 
 namespace tc {
-std::string prettyPrint(const Expr& expr);
+    std::string prettyPrint(const Expr& expr);
 }

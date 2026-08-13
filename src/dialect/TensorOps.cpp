@@ -3,6 +3,7 @@
 #define GET_OP_CLASSES
 #include "TensorOps.cpp.inc"
 
+// custom verify for matmul
 ::llvm::LogicalResult mlir::tc::MatMulOp::verify() {
 
     auto lhsType = ::llvm::cast<mlir::RankedTensorType>(getLhs().getType());
@@ -15,6 +16,20 @@
     if (lhsShape[1] != rhsShape[0]) {
         return emitOpError("inner dimension must match: lhs has ") << lhsShape[1] << ", rhs has " << rhsShape[0];
     }
+
+  return ::llvm::success();
+}
+
+
+// custom verify for transpose
+::llvm::LogicalResult mlir::tc::TransposeOp::verify() {
+  auto inputType = ::llvm::cast<mlir::RankedTensorType>(getInput().getType());
+  auto perm = getPerm();
+
+  if (perm.size() != static_cast<size_t>(inputType.getRank())) {
+    return emitOpError("perm size must match input rank: input has rank ")
+        << inputType.getRank() << ", perm has size " << perm.size();
+  }
 
   return ::llvm::success();
 }

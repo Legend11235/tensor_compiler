@@ -8,6 +8,7 @@
 #include "mlir/Interfaces/SideEffectInterfaces.h"
 #include "tc/dialect/TensorDialect.h"
 #include "mlir/Interfaces/InferTypeOpInterface.h"
+#include "mlir/Bytecode/BytecodeOpInterface.h"
 
 #define GET_OP_CLASSES
 #include "TensorOps.h.inc"

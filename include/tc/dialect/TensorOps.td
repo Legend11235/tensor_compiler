@@ -56,4 +56,22 @@ class TC_Op<string mnemonic, list<Trait> traits = []> :
         let assemblyFormat = "$input attr-dict `:` type($result)";
     }
 
+    // Transpose
+    def TransposeOp : TC_Op<"transpose", [Pure]> {
+        let summary = "tensor transpose operation";
+        let description = [{
+            Permutes the the axes of a tensor according to perm vector
+        }];
+
+        let arguments = (ins TensorOf<[F32]>:$input, DenseI64ArrayAttr:$perm);
+        let results = (outs TensorOf<[F32]>:$result);
+
+        // will need a custom verfier to check size of perm vector matches the size of the input vector
+        let hasVerifier = 1;
+
+        let assemblyFormat = "$input `,` $perm attr-dict `:` type($input) `->` type($result)";
+
+    }
+
+
 #endif // TC_OPS
