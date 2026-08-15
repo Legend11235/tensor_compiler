@@ -33,3 +33,26 @@
 
   return ::llvm::success();
 }
+
+
+//custom verify for reshape
+::llvm::LogicalResult mlir::tc::ReshapeOp::verify() {
+   auto inputType = ::llvm::cast<mlir::RankedTensorType>(getInput().getType());
+   auto newShape = getNewShape();
+
+   int64_t inputTotalElems = 1;
+   for (int64_t dim : inputType.getShape()) {
+      inputTotalElems *= dim;
+   }
+
+   int64_t newShapeTotalElems = 1;
+   for (int64_t dim : newShape) {
+      newShapeTotalElems *= dim;
+   }
+
+   if(inputTotalElems != newShapeTotalElems) {
+     return emitOpError("new_shape must have same total element count as input: input has ") << inputTotalElems << ", new_shape has " << newShapeTotalElems;
+   }
+
+   return ::llvm::success();
+}
