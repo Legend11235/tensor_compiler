@@ -73,5 +73,21 @@ class TC_Op<string mnemonic, list<Trait> traits = []> :
 
     }
 
+    // Reshape
+    def ReshapeOp : TC_Op<"reshape", [Pure]> {
+        let summary = "tensor reshape operation";
+        let description = [{ 
+            Reshapes a tensor into new_shape, keeping the total number of elements the same.
+         }];
+
+        let arguments = (ins TensorOf<[F32]>:$input, DenseI64ArrayAttr:$new_shape);
+        let results = (outs TensorOf<[F32]>:$result);
+
+        // will need a custom verifier to check total element count matches
+        let hasVerifier = 1;
+
+        let assemblyFormat = "$input `,` $new_shape attr-dict `:` type($input) `->` type($result)";
+    }
+
 
 #endif // TC_OPS
