@@ -3,6 +3,7 @@
 #include "tc/parser/Lexer.h"
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 namespace tc {
 
@@ -23,6 +24,7 @@ class Parser {
     bool isAtEnd() const;
 
     std::unique_ptr<Expr> parseExpr();
+    std::vector<int64_t> parseIntList();
 };
 
 }

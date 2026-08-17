@@ -52,6 +52,17 @@ Token Lexer::scanIdentifier() {
     return Token{IDENT, lexeme, startLine, startCol};
 }
 
+// consumes only digits and returns an INT_LIT token
+Token Lexer::scanNumber() {
+    int startLine = line_;
+    int startCol = col_;
+    std::string lexeme;
+    while(!isAtEnd() && (std::isdigit(static_cast<unsigned char>(peek())))){
+        lexeme += advance();
+    }
+    return Token{INT_LIT, lexeme, startLine, startCol};
+}
+
 // Small convenience wrapper for building a Token so tokenize() doesn't
 Token Lexer::makeToken(TokenKind kind, const std::string& lexeme, int line, int col){
     return Token{kind, lexeme, line, col};
@@ -80,6 +91,14 @@ std::vector<Token> Lexer::tokenize() {
             tokens.push_back(makeToken(COMMA, ",", startLine, startCol));
         } else if (std::isalpha(static_cast<unsigned char>(c)) || c == '_') {
             tokens.push_back(scanIdentifier());
+        } else if (c == '[') {
+            advance();
+            tokens.push_back(makeToken(LBRACKET, "[", startLine, startCol));
+        } else if (c == ']') {
+            advance();
+            tokens.push_back(makeToken(RBRACKET, "]", startLine, startCol));
+        } else if (std::isdigit(static_cast<unsigned char>(c))) {
+            tokens.push_back(scanNumber());
         } else {
             throw std::runtime_error(
                 "Unexpected character '" + std::string(1, c) + "' at line " + std::to_string(startLine));

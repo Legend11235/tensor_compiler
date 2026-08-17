@@ -56,15 +56,22 @@ std::unique_ptr<Expr> Parser::parseExpr() {
             return std::make_unique<Expr>(Expr{loc, AddNode{std::move(left), std::move(right)}});
         }
 
-    } else if (name == "relu" || name == "transpose") {
+        } else if (name == "relu") {
         auto arg = parseExpr();
         expect(RPAREN, "Expected ')' to close '" + name + "'");
+        return std::make_unique<Expr>(Expr{loc, ReluNode{std::move(arg)}});
 
-        if (name == "relu") {
-            return std::make_unique<Expr>(Expr{loc, ReluNode{std::move(arg)}});
-        } else {
-            return std::make_unique<Expr>(Expr{loc, TransposeNode{std::move(arg)}});
-        }
+    } else if (name == "transpose" || name == "reshape") {
+        auto arg = parseExpr();
+        expect(COMMA, "Expected ',' before list in '" + name + "'");
+        std::vector<int64_t> list = parseIntList();
+        expect(RPAREN, "Expected ')' to close '" + name + "'");
+
+        if (name == "transpose") {
+        return std::make_unique<Expr>(Expr{loc, TransposeNode{std::move(arg), std::move(list)}});
+    } else {
+        return std::make_unique<Expr>(Expr{loc, ReshapeNode{std::move(arg), std::move(list)}});
+    }
 
     } else {
         throw std::runtime_error(
@@ -81,5 +88,26 @@ std::unique_ptr<Expr> Parser::parse() {
     }
     return result;
 }
+
+std::vector<int64_t> Parser::parseIntList() {
+    std::vector<int64_t> values;
+    expect(LBRACKET, "Expected '[' to start list");
+
+    // atleast one number to enter in this if statement
+    if (!check(RBRACKET)) {
+        const Token& first = expect(INT_LIT, "Expected integer in list");
+        values.push_back(std::stoll(first.lexeme));
+
+        while (check(COMMA)) {
+            advance();
+            const Token& next = expect(INT_LIT, "Expected integer in list");
+            values.push_back(std::stoll(next.lexeme));
+        }
+    }
+
+    expect(RBRACKET, "Expected ']' to close list");
+    return values;
+}
+
 
 }

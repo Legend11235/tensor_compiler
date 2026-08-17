@@ -5,7 +5,7 @@
 namespace tc {
 
     enum TokenKind{
-        LPAREN, RPAREN, COMMA, IDENT, TOK_EOF
+        LPAREN, RPAREN, COMMA, IDENT, TOK_EOF, LBRACKET , RBRACKET, INT_LIT
     };
 
     struct Token{
@@ -32,6 +32,7 @@ namespace tc {
         void skipWhiteSpace();
         Token scanIdentifier();
         Token makeToken(TokenKind kind, const std::string& lexeme, int line, int col);
+        Token scanNumber();
     };
 
 }

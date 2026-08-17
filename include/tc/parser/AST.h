@@ -2,6 +2,9 @@
 #include <string>
 #include <memory>
 #include <variant>
+#include <vector>
+#include <cstdint>
+
 
 namespace tc {
 
@@ -21,8 +24,15 @@ struct AddNode {
 struct ReluNode {
     std::unique_ptr<Expr> tensor;
 };
+
 struct TransposeNode {
     std::unique_ptr<Expr> tensor;
+    std::vector<int64_t> perm;
+};
+
+struct ReshapeNode {
+    std::unique_ptr<Expr> tensor;
+    std::vector<int64_t> new_shape;
 };
 
 struct Location {
@@ -33,7 +43,7 @@ struct Location {
 
 struct Expr {
     Location loc;
-    std::variant<VarNode, MatmulNode, ReluNode, AddNode, TransposeNode> node;
+    std::variant<VarNode, MatmulNode, ReluNode, AddNode, TransposeNode, ReshapeNode> node;
 };
 
 }

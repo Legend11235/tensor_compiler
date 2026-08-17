@@ -42,9 +42,10 @@ int main() {
     expectRoundTrip("matmul(x1, x2)");
     expectRoundTrip("add(x1, x2)");
     expectRoundTrip("relu(x1)");
-    expectRoundTrip("transpose(x1)");
-    expectRoundTrip("matmul(relu(x1), transpose(x2))");
-    expectRoundTrip("add(matmul(x1, x2), relu(transpose(x3)))");
+    expectRoundTrip("transpose(x1, [1, 0])");
+    expectRoundTrip("reshape(x1, [2, 3])");
+    expectRoundTrip("matmul(relu(x1), transpose(x2, [1, 0]))");
+    expectRoundTrip("add(matmul(x1, x2), relu(transpose(x3, [0, 1, 2])))");
 
     expectThrow("matmul(x1)", "matmul missing second arg");
     expectThrow("matmul(x1, x2) )", "trailing garbage");
