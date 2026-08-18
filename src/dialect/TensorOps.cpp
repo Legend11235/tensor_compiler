@@ -23,21 +23,26 @@
 
 // custom verify for transpose
 ::llvm::LogicalResult mlir::tc::TransposeOp::verify() {
-  auto inputType = ::llvm::cast<mlir::RankedTensorType>(getInput().getType());
+  auto inputType = ::llvm::dyn_cast<mlir::RankedTensorType>(getInput().getType());
+  if (!inputType) {
+    // unranked input: rank isn't known, so the perm-size-vs-rank check can't run
+    return ::llvm::success();
+  }
   auto perm = getPerm();
-
   if (perm.size() != static_cast<size_t>(inputType.getRank())) {
     return emitOpError("perm size must match input rank: input has rank ")
         << inputType.getRank() << ", perm has size " << perm.size();
   }
-
   return ::llvm::success();
 }
 
 
 //custom verify for reshape
 ::llvm::LogicalResult mlir::tc::ReshapeOp::verify() {
-   auto inputType = ::llvm::cast<mlir::RankedTensorType>(getInput().getType());
+   auto inputType = ::llvm::dyn_cast<mlir::RankedTensorType>(getInput().getType());
+   if (!inputType) {
+     return ::llvm::success();
+   }
    auto newShape = getNewShape();
 
    int64_t inputTotalElems = 1;
