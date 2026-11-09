@@ -8,14 +8,46 @@
 
     auto lhsType = ::llvm::cast<mlir::RankedTensorType>(getLhs().getType());
     auto rhsType = ::llvm::cast<mlir::RankedTensorType>(getRhs().getType());
+    auto result = ::llvm::cast<mlir::RankedTensorType>(getResult().getType());
 
     auto lhsShape = lhsType.getShape();
     auto rhsShape = rhsType.getShape();
+    auto resultShape = result.getShape();
 
-    // check if its (M,N) x (N,M) for valid multiplication
-    if (lhsShape[1] != rhsShape[0]) {
-        return emitOpError("inner dimension must match: lhs has ") << lhsShape[1] << ", rhs has " << rhsShape[0];
+    // only report a mismatch if both inner dims are static 
+    if((!mlir::ShapedType::isDynamic(lhsShape[1])) && (!mlir::ShapedType::isDynamic(rhsShape[0]))){
+      // check if its (M,K) x (K,N) -> (M, N) for valid multiplication
+      if (lhsShape[1] != rhsShape[0]) {
+          return emitOpError("inner dimension must match: lhs has ") << lhsShape[1] << ", rhs has " << rhsShape[0];
+      }
+   }
+
+
+    // only report a mismatch if both outer dims are static 
+    // this actually didn't catch the case were the result itself had a dynamic shape
+    /*
+    if((!mlir::ShapedType::isDynamic(lhsShape[0])) && (!mlir::ShapedType::isDynamic(rhsShape[1]))){
+      // Will also have to check the result shape
+      if(resultShape[0]!= lhsShape[0] || resultShape[1] != rhsShape[1]){
+          return emitOpError("result dimensions do not match:") << "should be (" << lhsShape[0] << "," << rhsShape[1]<<")";
+      }
     }
+    */
+
+    // rewrite that commeneted block above with two seperate if statements to account for dynamic shape for result
+    // gaurds to check of dimensions of the result is static and not dynamic
+    if((!mlir::ShapedType::isDynamic(resultShape[0])) && (!mlir::ShapedType::isDynamic(lhsShape[0]))){
+      if(resultShape[0] != lhsShape[0]){
+        return emitOpError("result dimensions do not match: ") << "should be (" << lhsShape[0] << "," << rhsShape[1]<<")";
+      }
+    }
+
+    if((!mlir::ShapedType::isDynamic(resultShape[1])) && (!mlir::ShapedType::isDynamic(rhsShape[1]))){
+      if(resultShape[1] != rhsShape[1]){
+        return emitOpError("result dimensions do not match: ") << "should be (" << lhsShape[0] << "," << rhsShape[1]<<")";
+      }
+    }
+   
 
   return ::llvm::success();
 }
