@@ -1,4 +1,5 @@
 #include "tc/dialect/TensorOps.h"
+#include <vector>
 
 #define GET_OP_CLASSES
 #include "TensorOps.cpp.inc"
@@ -36,13 +37,13 @@
 
     // rewrite that commeneted block above with two seperate if statements to account for dynamic shape for result
     // gaurds to check of dimensions of the result is static and not dynamic
-    if((!mlir::ShapedType::isDynamic(resultShape[0])) && (!mlir::ShapedType::isDynamic(lhsShape[0]))){
+    if((!mlir::ShapedType::isDynamic(resultShape[0])) && (!mlir::ShapedType::isDynamic(lhsShape[0]))){ // if static so not * or ? and actual number
       if(resultShape[0] != lhsShape[0]){
         return emitOpError("result dimensions do not match: ") << "should be (" << lhsShape[0] << "," << rhsShape[1]<<")";
       }
     }
 
-    if((!mlir::ShapedType::isDynamic(resultShape[1])) && (!mlir::ShapedType::isDynamic(rhsShape[1]))){
+    if((!mlir::ShapedType::isDynamic(resultShape[1])) && (!mlir::ShapedType::isDynamic(rhsShape[1]))){ // if static so not * or ? and actual number
       if(resultShape[1] != rhsShape[1]){
         return emitOpError("result dimensions do not match: ") << "should be (" << lhsShape[0] << "," << rhsShape[1]<<")";
       }
@@ -60,11 +61,39 @@
     // unranked input: rank isn't known, so the perm-size-vs-rank check can't run
     return ::llvm::success();
   }
+  
   auto perm = getPerm();
+
+  // this checks only the dimention of the permution array
   if (perm.size() != static_cast<size_t>(inputType.getRank())) {
     return emitOpError("perm size must match input rank: input has rank ")
         << inputType.getRank() << ", perm has size " << perm.size();
   }
+
+  // i need assitinal checks to determine if the permution input is also valid
+  // each elemnt in the permutation array p must be: 0 <= p < rank (zero indexed)
+  // also each dimention must only appear once
+
+  auto rank = inputType.getRank();
+  std::vector<bool> seen(rank, false);
+  
+  // traverse through perm and update this array
+  // if loop goes out of range would mean higher rank deteceted
+  // if already seen means duplicate
+  for(const auto& p : perm){
+
+    if(p < 0 || p >= rank ){
+         return emitOpError("perm entry ") << p << " is out of range for rank " << rank;
+    }
+
+    if(seen[p]){
+      return emitOpError("perm entry") << p << " appears more than once";
+    }
+
+    seen[p] = true;
+  }
+
+  // passed all the checks so we can return success
   return ::llvm::success();
 }
 
@@ -72,8 +101,9 @@
 //custom verify for reshape
 ::llvm::LogicalResult mlir::tc::ReshapeOp::verify() {
    auto inputType = ::llvm::dyn_cast<mlir::RankedTensorType>(getInput().getType());
+   // dynamic cast will return null if shape is unkown
    if (!inputType) {
-     return ::llvm::success();
+     return ::llvm::success(); // not enougoht information to verify so let it pass
    }
    auto newShape = getNewShape();
 
