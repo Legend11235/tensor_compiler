@@ -87,7 +87,7 @@
     }
 
     if(seen[p]){
-      return emitOpError("perm entry") << p << " appears more than once";
+      return emitOpError("perm entry ") << p << " appears more than once";
     }
 
     seen[p] = true;
@@ -101,14 +101,29 @@
 //custom verify for reshape
 ::llvm::LogicalResult mlir::tc::ReshapeOp::verify() {
    auto inputType = ::llvm::dyn_cast<mlir::RankedTensorType>(getInput().getType());
+
+   auto newShape = getNewShape();
+
+   // newShape entry can't be less than 0
+   for(const auto& n : newShape){
+      if(n < 0){
+        return emitOpError("new_shape entry ") << n << " must be non-negative";
+      }
+   }
+
    // dynamic cast will return null if shape is unkown
    if (!inputType) {
      return ::llvm::success(); // not enougoht information to verify so let it pass
    }
-   auto newShape = getNewShape();
+   
+
+   
 
    int64_t inputTotalElems = 1;
    for (int64_t dim : inputType.getShape()) {
+    if(mlir::ShapedType::isDynamic(dim)){
+      return ::llvm::success();
+    }
       inputTotalElems *= dim;
    }
 
