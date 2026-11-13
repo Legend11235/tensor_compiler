@@ -15,7 +15,7 @@ int main() {
     context.getOrLoadDialect<mlir::func::FuncDialect>();
     context.getOrLoadDialect<mlir::tensor::TensorDialect>();
 
-    std::string source = "reshape(x1, [2, 3])";
+    std::string source = "add(relu(x1), transpose(x2, [1, 0]))";
     tc::Lexer lexer(source);
     auto tokens = lexer.tokenize();
     tc::Parser parser(std::move(tokens));
